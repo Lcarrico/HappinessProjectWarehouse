@@ -28,13 +28,14 @@ def filterCsv(obj):
 keys = map(getKey, response['Contents'])
 keys_filtered = filter(filterCsv, keys)
 
-
+data = []
 for key in keys_filtered:
     response = s3.get_object(Bucket='happiness-project-data', Key=key)
     s3_data = io.BytesIO(response.get('Body').read())
     try:
-        data = pd.read_csv(s3_data, encoding='utf-8-sig')
+        df = pd.read_csv(s3_data, encoding='utf-8-sig')
     except UnicodeDecodeError:
-        data = pd.read_csv(s3_data, encoding='latin-1')
+        df = pd.read_csv(s3_data, encoding='latin-1')
+    data.append([key,df])
 
-    print(data.head(10))
+#    print(df.head(10))
